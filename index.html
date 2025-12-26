@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音コミュ！</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app-container">
+
+    <div id="splash-screen" class="screen active">
+        <div>🎵 音コミュ！</div>
+    </div>
+
+    <div id="auth-screen" class="screen">
+        <div class="header">
+            <span>ようこそ</span>
+        </div>
+        <div class="content" style="display:flex; flex-direction:column; justify-content:center;">
+            <h2 style="text-align:center;">音コミュ！</h2>
+            <div id="auth-mode-register">
+                <h3>新規登録</h3>
+                <input type="text" id="reg-nickname" placeholder="ニックネーム">
+                <input type="password" id="reg-password" placeholder="パスワード">
+                <button class="primary-btn" onclick="register()">登録してはじめる</button>
+                <p style="text-align:center; font-size:12px;" onclick="toggleAuthMode()">すでにアカウントをお持ちの方は<u>ログイン</u></p>
+            </div>
+            <div id="auth-mode-login" style="display:none;">
+                <h3>ログイン</h3>
+                <input type="text" id="login-nickname" placeholder="ニックネーム">
+                <input type="password" id="login-password" placeholder="パスワード">
+                <button class="primary-btn" onclick="login()">ログイン</button>
+                <p style="text-align:center; font-size:12px;" onclick="toggleAuthMode()">新規登録は<u>こちら</u></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="home-screen" class="screen">
+        <div class="header">
+            <span>ホーム</span>
+            <div class="user-icon-mini" id="my-icon-home" onclick="goToMyPage()"></div>
+        </div>
+        <div class="content">
+            <div class="category-card" onclick="openChatRoom('open_chat', 'オープンチャット')">
+                <div class="category-title">🌐 オープンチャット</div>
+                <div class="category-desc">誰でも自由に書き込める広場</div>
+            </div>
+            <div class="category-card" onclick="openThreadList('consultation')">
+                <div class="category-title">💬 相談室</div>
+                <div class="category-desc">悩みを相談しよう</div>
+            </div>
+            <div class="category-card" onclick="openThreadList('group')">
+                <div class="category-title">🎸 グループ結成</div>
+                <div class="category-desc">バンドメンバー募集掲示板</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="thread-list-screen" class="screen">
+        <div class="header">
+            <button class="header-btn" onclick="goBack('home-screen')">＜ 戻る</button>
+            <span id="thread-list-title">掲示板</span>
+            <span style="width:30px;"></span>
+        </div>
+        <div class="content">
+            <button class="secondary-btn" style="width:100%; margin-bottom:10px;" onclick="createNewThread()">＋ 新しいスレッドを立てる</button>
+            <div id="thread-container">
+                </div>
+        </div>
+    </div>
+
+    <div id="chat-screen" class="screen">
+        <div class="header">
+            <button class="header-btn" onclick="exitChat()">＜ 戻る</button>
+            <span id="chat-title">ルーム名</span>
+            <span style="width:30px;"></span>
+        </div>
+        <div class="chat-area" id="message-container">
+            </div>
+        <div class="input-area">
+            <input type="text" id="chat-input" placeholder="メッセージを入力...">
+            <button class="primary-btn" onclick="sendMessage()">送信</button>
+        </div>
+    </div>
+
+    <div id="profile-screen" class="screen">
+        <div class="header">
+            <button class="header-btn" onclick="goBackProfile()">＜ 戻る</button>
+            <span>プロフィール</span>
+            <span style="width:30px;"></span>
+        </div>
+        <div class="content" style="padding:0;">
+            <div class="profile-header">
+                <div class="profile-icon" id="profile-img"></div>
+                <h3 id="profile-name">ユーザ名</h3>
+                <div class="stats-row">
+                    <span>フォロー: <b id="profile-following">0</b></span>
+                    <span>フォロワー: <b id="profile-followers">0</b></span>
+                </div>
+                <div id="profile-actions" style="margin-top:10px;">
+                    </div>
+            </div>
+            <div class="profile-tabs">
+                <div class="tab active">過去の投稿</div>
+                <div class="tab">いいね履歴</div>
+            </div>
+            <div id="profile-content" style="padding:20px; text-align:center; color:#777;">
+                （投稿履歴リスト表示予定地）
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
