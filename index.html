@@ -19,20 +19,20 @@
             <span>ようこそ</span>
         </div>
         <div class="content" style="display:flex; flex-direction:column; justify-content:center;">
-            <h2 style="text-align:center;">音コミュ！</h2>
+            <h2 style="text-align:center; color:#4CAF50;">音コミュ！</h2>
             <div id="auth-mode-register">
                 <h3>新規登録</h3>
                 <input type="text" id="reg-nickname" placeholder="ニックネーム">
                 <input type="password" id="reg-password" placeholder="パスワード">
                 <button class="primary-btn" onclick="register()">登録してはじめる</button>
-                <p style="text-align:center; font-size:12px;" onclick="toggleAuthMode()">すでにアカウントをお持ちの方は<u>ログイン</u></p>
+                <p class="link-text" onclick="toggleAuthMode()">すでにアカウントをお持ちの方は<u>ログイン</u></p>
             </div>
             <div id="auth-mode-login" style="display:none;">
                 <h3>ログイン</h3>
                 <input type="text" id="login-nickname" placeholder="ニックネーム">
                 <input type="password" id="login-password" placeholder="パスワード">
                 <button class="primary-btn" onclick="login()">ログイン</button>
-                <p style="text-align:center; font-size:12px;" onclick="toggleAuthMode()">新規登録は<u>こちら</u></p>
+                <p class="link-text" onclick="toggleAuthMode()">新規登録は<u>こちら</u></p>
             </div>
         </div>
     </div>
@@ -99,7 +99,7 @@
                     <span>フォロー: <b id="profile-following">0</b></span>
                     <span>フォロワー: <b id="profile-followers">0</b></span>
                 </div>
-                <div id="profile-actions" style="margin-top:10px;">
+                <div id="profile-actions" style="margin-top:10px; display:flex; justify-content:center; gap:10px;">
                     </div>
             </div>
             <div class="profile-tabs">
@@ -107,7 +107,7 @@
                 <div class="tab">いいね履歴</div>
             </div>
             <div id="profile-content" style="padding:20px; text-align:center; color:#777;">
-                （投稿履歴リスト表示予定地）
+                （投稿履歴などがここに表示されます）
             </div>
         </div>
     </div>
