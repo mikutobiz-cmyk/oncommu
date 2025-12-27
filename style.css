@@ -1,4 +1,4 @@
-/* --- 基本スタイル --- */
+/* --- ベース設定 --- */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #f0f2f5;
@@ -7,8 +7,6 @@ body {
     justify-content: center;
     height: 100vh;
 }
-
-/* スマホ画面のシミュレーション */
 #app-container {
     width: 100%;
     max-width: 400px;
@@ -21,9 +19,9 @@ body {
     flex-direction: column;
 }
 
-/* --- 画面共通 --- */
+/* --- 画面制御 --- */
 .screen {
-    display: none; /* デフォルト非表示 */
+    display: none;
     flex-direction: column;
     height: 100%;
     width: 100%;
@@ -33,25 +31,22 @@ body {
     background: white;
     z-index: 1;
 }
-
 .screen.active {
     display: flex;
     z-index: 10;
 }
 
-/* ヘッダー */
+/* --- UIパーツ --- */
 .header {
-    background-color: #4CAF50; /* 音コミュらしい緑 */
+    background-color: #4CAF50;
     color: white;
-    padding: 15px;
-    text-align: center;
-    font-weight: bold;
+    padding: 0 15px;
+    height: 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    height: 50px;
-    box-sizing: border-box;
 }
 .header-btn {
     background: none;
@@ -60,59 +55,67 @@ body {
     font-size: 14px;
     cursor: pointer;
 }
-.user-icon-mini {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #ddd;
-    cursor: pointer;
-    background-size: cover;
-}
-
-/* コンテンツエリア */
 .content {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
 }
+.user-icon-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ddd;
+    background-size: cover;
+    cursor: pointer;
+    border: 2px solid white;
+}
 
-/* --- フォーム要素 --- */
-input, button.primary-btn {
+/* フォーム */
+input {
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;
-    box-sizing: border-box;
     border-radius: 5px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
 }
-button.primary-btn {
+.primary-btn {
+    width: 100%;
+    padding: 12px;
     background-color: #4CAF50;
     color: white;
     border: none;
+    border-radius: 5px;
     font-weight: bold;
     cursor: pointer;
 }
-button.secondary-btn {
+.secondary-btn {
+    padding: 8px 12px;
     background-color: #eee;
     color: #333;
     border: none;
-    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 5px;
+}
+.link-text {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 15px;
+    cursor: pointer;
+    color: #555;
 }
 
-/* --- スプラッシュ画面 --- */
+/* スプラッシュ */
 #splash-screen {
     justify-content: center;
     align-items: center;
     background-color: #4CAF50;
     color: white;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
 }
 
-/* --- ホーム画面 --- */
+/* ホーム */
 .category-card {
     background: #fff;
     border: 1px solid #eee;
@@ -124,46 +127,30 @@ button.secondary-btn {
     cursor: pointer;
     transition: 0.2s;
 }
-.category-card:active {
-    transform: scale(0.98);
-}
-.category-title {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 5px;
-    color: #333;
-}
-.category-desc {
-    font-size: 12px;
-    color: #777;
-}
+.category-card:active { transform: scale(0.98); }
+.category-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; color: #333; }
+.category-desc { font-size: 12px; color: #777; }
 
-/* --- チャット画面 --- */
+/* チャット */
 .chat-area {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
-    background-color: #e5ddd5; /* LINE風の背景 */
+    background-color: #e5ddd5;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
-.message-row {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 5px;
-}
-.message-row.my-message {
-    flex-direction: row-reverse;
-}
+.message-row { display: flex; align-items: flex-start; margin-bottom: 5px; }
+.message-row.my-message { flex-direction: row-reverse; }
 .msg-icon {
     width: 36px;
     height: 36px;
     border-radius: 50%;
     background-color: #ccc;
     margin: 0 8px;
-    cursor: pointer;
     background-size: cover;
+    cursor: pointer;
 }
 .msg-bubble {
     background-color: white;
@@ -173,62 +160,36 @@ button.secondary-btn {
     max-width: 70%;
     box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 }
-.my-message .msg-bubble {
-    background-color: #dcf8c6; /* 自分のメッセージ色 */
-}
-.msg-name {
-    font-size: 10px;
-    color: #555;
-    margin-bottom: 2px;
-}
-.my-message .msg-name {
-    display: none;
-}
-.msg-text {
-    font-size: 14px;
-    word-break: break-all;
-}
+.my-message .msg-bubble { background-color: #dcf8c6; }
+.msg-name { font-size: 10px; color: #555; margin-bottom: 2px; }
+.msg-text { font-size: 14px; word-break: break-all; }
 .msg-actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     margin-top: 4px;
-    font-size: 10px;
+    font-size: 11px;
     color: #888;
     justify-content: flex-end;
 }
-.action-btn {
-    cursor: pointer;
-}
-.action-btn:hover {
-    color: #4CAF50;
-}
+.action-btn { cursor: pointer; }
 .input-area {
     padding: 10px;
     background: white;
     display: flex;
     border-top: 1px solid #ddd;
 }
-.input-area input {
-    margin-bottom: 0;
-    flex: 1;
-    margin-right: 10px;
-}
-.input-area button {
-    width: 60px;
-    margin-bottom: 0;
-}
+.input-area input { margin-bottom: 0; flex: 1; margin-right: 10px; }
+.input-area button { width: 60px; padding: 0; }
 
-/* --- スレッドリスト --- */
+/* スレッドリスト */
 .thread-item {
     padding: 15px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
 }
-.thread-item:hover {
-    background-color: #f9f9f9;
-}
+.thread-item:hover { background-color: #f9f9f9; }
 
-/* --- マイページ/プロフィール --- */
+/* プロフィール */
 .profile-header {
     text-align: center;
     padding: 20px;
@@ -250,10 +211,7 @@ button.secondary-btn {
     margin: 10px 0;
     font-size: 14px;
 }
-.profile-tabs {
-    display: flex;
-    border-bottom: 1px solid #ddd;
-}
+.profile-tabs { display: flex; border-bottom: 1px solid #ddd; }
 .tab {
     flex: 1;
     padding: 10px;
