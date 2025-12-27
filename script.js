@@ -6,7 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ========================================================
-// あなたのFirebase設定 (埋め込み済み)
+// あなたの設定済みFirebase Config
 // ========================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDU7ymZdVHEyIzaMjUO4tsPCklY-bcxo-M",
@@ -18,17 +18,17 @@ const firebaseConfig = {
 };
 // ========================================================
 
-// --- 2. アプリの初期化 ---
+// --- 2. アプリ初期化 ---
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 状態管理変数
+// 状態管理
 let currentUser = null;
 let currentThreadId = null;
 let viewingUserId = null;
-let unsubscribeChat = null; 
+let unsubscribeChat = null;
 
-// --- 3. HTML側から関数を呼べるようにする設定 ---
+// --- 3. HTMLから関数を使えるようにする ---
 window.register = register;
 window.login = login;
 window.toggleAuthMode = toggleAuthMode;
@@ -45,16 +45,15 @@ window.deleteMessage = deleteMessage;
 window.openProfile = openProfile;
 window.goBackProfile = goBackProfile;
 
-
-/* --- 初期化処理 --- */
+/* --- アプリ起動時 --- */
 window.onload = function() {
-    console.log("アプリ起動中...");
+    console.log("音コミュ！起動中...");
     setTimeout(() => {
         switchScreen('auth-screen');
-    }, 1500);
+    }, 1500); // 1.5秒後にスプラッシュから移動
 };
 
-/* --- 画面遷移管理 --- */
+/* --- 画面遷移システム --- */
 function switchScreen(screenId) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
@@ -69,6 +68,7 @@ function exitChat() {
         unsubscribeChat();
         unsubscribeChat = null;
     }
+    // オープンチャットならホームへ、それ以外は掲示板一覧へ
     if(currentThreadId === 'open_chat') {
         switchScreen('home-screen');
     } else {
@@ -76,7 +76,7 @@ function exitChat() {
     }
 }
 
-/* --- 認証機能 --- */
+/* --- 認証 (ログイン/登録) --- */
 function toggleAuthMode() {
     const reg = document.getElementById('auth-mode-register');
     const log = document.getElementById('auth-mode-login');
@@ -102,24 +102,23 @@ async function register() {
             return alert("そのニックネームは既に使用されています");
         }
 
-        // 登録処理
+        // Firestoreに保存
         const docRef = await addDoc(collection(db, "users"), {
             nickname: nick,
             password: pass,
-            icon: 'https://placehold.co/100x100/orange/white?text=' + nick.charAt(0),
+            icon: 'https://placehold.co/100x100/4CAF50/white?text=' + nick.charAt(0),
             following: 0,
             followers: 0,
             createdAt: serverTimestamp()
         });
 
-        // ログイン状態へ
-        currentUser = { id: docRef.id, nickname: nick, icon: 'https://placehold.co/100x100/orange/white?text=' + nick.charAt(0) };
+        currentUser = { id: docRef.id, nickname: nick, icon: 'https://placehold.co/100x100/4CAF50/white?text=' + nick.charAt(0) };
         setupHome();
         switchScreen('home-screen');
 
     } catch (e) {
-        console.error("登録エラー:", e);
-        alert("登録に失敗しました。コンソールを確認してください。");
+        console.error("登録エラー", e);
+        alert("登録に失敗しました。");
     }
 }
 
@@ -140,8 +139,8 @@ async function login() {
             alert('ニックネームまたはパスワードが違います');
         }
     } catch (e) {
-        console.error("ログインエラー:", e);
-        alert("ログインに失敗しました");
+        console.error("ログインエラー", e);
+        alert("ログインエラー");
     }
 }
 
@@ -149,7 +148,7 @@ function setupHome() {
     document.getElementById('my-icon-home').style.backgroundImage = `url(${currentUser.icon})`;
 }
 
-/* --- スレッド機能 --- */
+/* --- スレッド掲示板 --- */
 let currentCategory = '';
 
 async function openThreadList(category) {
@@ -157,24 +156,28 @@ async function openThreadList(category) {
     document.getElementById('thread-list-title').innerText = category === 'consultation' ? '相談室' : 'グループ結成';
     
     const container = document.getElementById('thread-container');
-    container.innerHTML = '読み込み中...';
+    container.innerHTML = '<div style="padding:20px; text-align:center;">読み込み中...</div>';
     
     try {
         const q = query(collection(db, "threads"), where("type", "==", category), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         
         container.innerHTML = '';
+        if(querySnapshot.empty) {
+            container.innerHTML = '<div style="padding:20px; text-align:center;">まだスレッドがありません</div>';
+        }
+        
         querySnapshot.forEach((doc) => {
             const t = doc.data();
             const div = document.createElement('div');
             div.className = 'thread-item';
-            div.innerHTML = `<b>${t.title}</b><br><span style="font-size:12px; color:#888;">作成: ${t.creatorName || '匿名'}</span>`;
+            div.innerHTML = `<b>${t.title}</b><br><span style="font-size:12px; color:#888;">作成者: ${t.creatorName || '匿名'}</span>`;
             div.onclick = () => openChatRoom(doc.id, t.title);
             container.appendChild(div);
         });
     } catch (e) {
         console.error("スレッド取得エラー:", e);
-        container.innerHTML = '読み込み失敗（まだ投稿がないか、ルール未設定の可能性があります）';
+        container.innerHTML = '読み込み失敗（インデックス作成待ち等の可能性があります）';
     }
 
     switchScreen('thread-list-screen');
@@ -194,17 +197,17 @@ async function createNewThread() {
             openThreadList(currentCategory);
         } catch (e) {
             console.error(e);
-            alert("スレッド作成失敗");
+            alert("作成失敗");
         }
     }
 }
 
-/* --- チャット機能 --- */
+/* --- チャット & リアルタイム機能 --- */
 async function openChatRoom(threadId, title) {
     currentThreadId = threadId;
     document.getElementById('chat-title').innerText = title;
     
-    // オープンチャット初期化
+    // オープンチャットがなければ作成する安全策
     if (threadId === 'open_chat') {
         const docRef = doc(db, "threads", "open_chat");
         try {
@@ -212,9 +215,7 @@ async function openChatRoom(threadId, title) {
             if (!docSnap.exists()) {
                 await setDoc(docRef, { title: "オープンチャット", type: "open" });
             }
-        } catch(e) {
-            console.error("チャット初期化エラー:", e);
-        }
+        } catch(e) { console.error(e); }
     }
 
     switchScreen('chat-screen');
@@ -230,6 +231,7 @@ function startChatListener(threadId) {
         orderBy("createdAt", "asc")
     );
 
+    // リアルタイムリスナー起動
     unsubscribeChat = onSnapshot(q, (snapshot) => {
         container.innerHTML = '';
         snapshot.forEach((doc) => {
@@ -241,6 +243,7 @@ function startChatListener(threadId) {
             
             let html = ``;
             if (!isMe) {
+                // 他人のアイコン（クリックでプロフィールへ）
                 const iconUrl = msg.senderIcon || 'https://placehold.co/30x30/ccc/white';
                 html += `<div class="msg-icon" style="background-image: url(${iconUrl})" onclick="openProfile('${msg.senderId}')"></div>`;
             }
@@ -253,13 +256,14 @@ function startChatListener(threadId) {
                         <span class="action-btn" onclick="likeMessage('${doc.id}', ${msg.likes || 0})">
                             ❤️ ${msg.likes || 0}
                         </span>
-                        ${isMe ? `<span class="action-btn" onclick="deleteMessage('${doc.id}')">🗑️</span>` : ''}
+                        ${isMe ? `<span class="action-btn" onclick="deleteMessage('${doc.id}')">🗑️削除</span>` : ''}
                     </div>
                 </div>
             `;
             row.innerHTML = html;
             container.appendChild(row);
         });
+        // 最新メッセージまでスクロール
         container.scrollTop = container.scrollHeight;
     });
 }
@@ -279,9 +283,7 @@ async function sendMessage() {
             createdAt: serverTimestamp()
         });
         input.value = '';
-    } catch (e) {
-        console.error("送信エラー:", e);
-    }
+    } catch (e) { console.error("送信エラー", e); }
 }
 
 async function likeMessage(messageId, currentLikes) {
@@ -300,7 +302,11 @@ async function deleteMessage(messageId) {
     }
 }
 
-/* --- プロフィール機能 --- */
+/* --- プロフィール & マイページ機能 --- */
+function goToMyPage() {
+    openProfile(currentUser.id);
+}
+
 async function openProfile(userId) {
     viewingUserId = userId;
     try {
@@ -315,11 +321,22 @@ async function openProfile(userId) {
             document.getElementById('profile-followers').innerText = user.followers || 0;
 
             const actionsDiv = document.getElementById('profile-actions');
-            actionsDiv.innerHTML = isMe ? 
-                `<button class="secondary-btn" style="width:auto; font-size:12px;">プロフィール編集</button>
-                 <button class="secondary-btn" style="width:auto; font-size:12px;">DM一覧</button>` : 
-                `<button class="primary-btn" style="width:auto; padding:5px 15px;">フォローする</button>
-                 <button class="secondary-btn" style="width:auto; padding:5px 15px;">DMを送る</button>`;
+            actionsDiv.innerHTML = '';
+
+            // マイページか他人かでボタンを出し分ける
+            if (isMe) {
+                // 自分の場合：DM一覧など
+                actionsDiv.innerHTML = `
+                    <button class="secondary-btn" onclick="alert('DM一覧機能は準備中です')">📩 DM一覧</button>
+                    <button class="secondary-btn">⚙️ 設定</button>
+                `;
+            } else {
+                // 他人の場合：フォロー、DM送信
+                actionsDiv.innerHTML = `
+                    <button class="primary-btn" style="width:auto;" onclick="alert('フォローしました！')">＋ フォロー</button>
+                    <button class="secondary-btn" onclick="alert('DM送信画面へ（準備中）')">📩 DMを送る</button>
+                `;
+            }
             
             switchScreen('profile-screen');
         }
